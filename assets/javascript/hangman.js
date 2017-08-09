@@ -1,5 +1,4 @@
 
-
 //Set up canvas
 var canvas = document.getElementById('gameCanvas');
 var context = canvas.getContext('2d');
@@ -42,7 +41,7 @@ document.onkeydown = function (event) {
 function updateBoard(userGuess) {
   userIndex = word.indexOf(userGuess);
 
-  //If the userguess matches and hasn't been guessed before.
+  //If the game is still valid and userguess matches and hasn't been guessed before.
   if (wordLength > 0 && userIndex != -1 && guessed.indexOf(userGuess) == -1) {
     guessed.push(userGuess);
     wordLength--;
@@ -57,7 +56,8 @@ function updateBoard(userGuess) {
         wordLength--;
       }
     }
-  } else if (wordLength > 0 && userIndex == -1) {
+  } else if (wordLength > 0 && userIndex == -1 && guessed.indexOf(userGuess) == -1) {
+    console.log("I think you picked a bad letter... wordLength > 0 && userIndex == -1 :" + (wordLength > 0 && userIndex == -1));
     gamestate++;
     drawgallows(gamestate);
   }

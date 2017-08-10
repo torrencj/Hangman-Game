@@ -21,31 +21,28 @@ context.font = '20pt Monospace';
 var word = pickword(dictionary);
 
 //Uncomment for testing:
-// var word = "poppy";
+var word = "poppy";
 
 drawgallows(gamestate);
 drawboard([100, 500], word);
 
 //How many unrevealed letters there are.
-var wordLength = word.length;
+var lettersRemaining = word.length;
+console.log("initial word length: "+ lettersRemaining);
 
 //If the input is allowed and the game is still going, respond to guesses.
 document.onkeydown = function (event) {
   if (allowedInput.indexOf(event.key) != -1 && gamestate < 5) {
     updateBoard(event.key);
-    // context.fillText(event.key, cursor, 550);
-    // cursor += 20;
+    if (lettersRemaining < 1) {
+      context.fillText("Winner!", 350, 300);
+    }
   }
 };
 
-//isallowed?
 
-//ismatch?
-  //isnew?
-  //reveal
-// else gamestate++
 
-isNew = function(guess) {
+function isNew(guess) {
   if (guessed.indexOf(guess) == -1) {
     return true;
   } else {
@@ -53,54 +50,41 @@ isNew = function(guess) {
   }
 }
 
-isMatch = function(guess) {
+function isMatch(guess) {
   if (word.indexOf(guess) != -1) {
   return true;
-} else {
-  return false;
+  } else {
+    return false;
+  }
 }
+
+//Draw occurrences of the letter and subtract letters remaining for each
+function reveal(guess) {
+  for (var z = 0; z < word.length; z++) {
+    if (word[z] == guess) {
+      context.fillText(word[z], (100 + (z * 20)), 490);
+      lettersRemaining--;
+      console.log("reveal: "+ lettersRemaining);
+    }
+  }
 }
 
 //Test the guess and draw updates
-function updateBoard(userGuess) {
-  userIndex = word.indexOf(userGuess);
+function updateBoard(guess) {
 
-  if (isNew(userGuess)) {
-    //Draw the guess to the board.
-    context.fillText(event.key, cursor, 550);
-    cursor += 20;
-  }
-
-  //If the userguess matches and hasn't been guessed before.
-  if (wordLength > 0 && isNew(userGuess) && isMatch(userGuess)) {
-    guessed.push(userGuess);
-    wordLength--;
-
-    //Draw the first index
-    context.fillText(word[userIndex], (100 + (userIndex * 20)), 490);
-
-    //Go through all rest of the letters in word.
-    for (var z = userIndex + 1; z < word.length; z++) {
-      //Draw other occurrences of the letter.
-      if (word[z] == userGuess) {
-        context.fillText(word[z], (100 + (z * 20)), 490);
-        wordLength--;
+  if (lettersRemaining > 0) {
+    if (isNew(guess)) {
+      context.fillText(event.key, cursor, 550);
+      cursor += 20;
+      if (isMatch(guess)) {
+        reveal(guess);
+        guessed.push(guess);
+      } else {
+        guessed.push(guess);
+        gamestate++;
+        drawgallows(gamestate);
       }
-    }
-  } else if (wordLength > 0 && isNew(userGuess)) {
-    gamestate++;
-    drawgallows(gamestate);
-  }
-  
-  //Add the guess to the previous guessed array.
-  if (wordLength > 0 && guessed.indexOf(userGuess) == -1) {
-    guessed.push(userGuess);
-  }
-
-  //Check for win state.
-  if (wordLength == 0) {
-    context.fillText("Winner!", 350, 300);
-    wordLength--;
+    } 
   }
 }
 
@@ -135,6 +119,7 @@ function drawgallows(gamestate) {
     context.fillText(word, 350, 400);
   }
 }
+
 //Pick a random word from the dictionary.
 function pickword(dictionary) {
   return dictionary[Math.floor(Math.random() * (dictionary.length - 1))];
@@ -147,6 +132,7 @@ function drawline(from, to) {
   context.lineTo(to[0], to[1]);
   context.stroke();
 }
+
 //Draw a rectange of height and width from top left corner position. 
 //Accepts ([x,y], w, h) for position, width, and height.
 function drawrect(position, width, height) {
@@ -158,6 +144,7 @@ function drawrect(position, width, height) {
   context.lineTo(position[0], position[1]);
   context.stroke();
 }
+
 //Draw a grid
 function drawGrid() {
   for (var i = 0; i < 6; i++) {

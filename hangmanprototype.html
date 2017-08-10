@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- <script src="words.js"></script> -->
+</head>
+
+<body>
+    <input type="text" id="userInput"=> give me input</input>
+    <button onclick="input()">Submit</button>
+
+    <!-- add this line for function to write into  -->
+    <!-- <p id="demo"></p>  -->
+
+    <canvas id="myCanvas" width="600" height="800"></canvas>
+
+
+
+    <script type="text/javascript">
+        // TODO: Find a better way to get interactive text input.
+        // TODO: Update the output on the fly.
+        // TODO: Remember hangman shows all the letters you guessed -- at once!
+        // Corner cases:
+        // 1. Last letter in word.
+        // 2. Plural letters.
+        // 3. Filter multiple inputs.
+        // 4. Filter non A-Z
+        // 5. Filter uppercase.
+
+        var canvas = document.getElementById('myCanvas');
+        var context = canvas.getContext('2d');
+
+        context.font = 'italic 40pt Sans-Serif'; //fine for welome message
+        context.fillText('Welcome to hangman', 60, 100);
+        context.font = '20pt Monospace';
+
+        var intro = 'Welcome to Hangman';
+        // var mainMenu = 'Please make a selection: 1. New game, 2. Stats, 3. Exit';
+        var exit = false;
+        // var dictionary = ["abc", "def", "third"]
+        var dictionary = ["valete"];
+
+        // while (!exit) {
+        console.log(userInput);
+        main(userInput);
+        // }
+
+        function main(selection) {
+            // var selection;
+            // console.log(mainMenu)
+            // selection = prompt(mainMenu);
+            // context.fillText('1, 2, or 3?', 20, 50);
+
+            if (selection == '3') {
+                exit = true;
+            } else if (selection == '2') {
+                console.log("Sorry, this is coming later.");
+                context.fillText('Sorry, this is coming later.', 60, 50);
+            } else {
+                game(pickword(dictionary));
+            }
+        }
+
+        function pickword(dictionary) {
+            return dictionary[Math.floor(Math.random() * (dictionary.length))];
+        }
+
+        function game(word) {
+
+            console.log(word);
+            letters = Array.from(word);
+            console.log(letters);
+
+            var guesses = 0;
+            var guessLimit = 5;
+            var index;
+            var wordLength = letters.length;
+            console.log("wordlength = " + wordLength);
+            var previous = [];
+
+            // Draw the game board.
+            for (var i = 0; i < letters.length; i++) {
+                context.fillText('_ ', (60 + i * 20), 50);
+            }
+
+
+            while (guesses <= guessLimit && wordLength > 0) {
+                resp = prompt("Guess: " + guesses + " Enter your guess:");
+
+                //TODO: for loop to display all matching letters.
+                index = letters.indexOf(resp);
+
+                if (previous.indexOf(resp) == -1) {
+                    previous.push(resp);
+                    if (letters.indexOf(resp) >= 0) {
+                        context.fillText(letters[index], (60 + index * 20), 48); //print the first one
+                        //go over all the rest to find more matches
+                        wordLength--;
+                        if (index < letters.length - 1) {
+                            for (var i = index + 1; i < letters.length; i++) {
+
+                                console.log("index: " + index);
+                                console.log("i: " + i);
+                                console.log("letters[i]: " + letters[i]);
+                                console.log("resp: " + resp);
+
+
+                                //display them if they match
+                                if (letters[i] == resp) {
+                                    context.fillText(letters[index], (60 + i * 20), 48);
+                                    wordLength--; //remaining number of letters goes down for each.
+                                    console.log("Wordlength is now: " + wordLength);
+                                }
+                            }
+                        }
+
+                        // document.write(letters[index]); //old and janky
+                        // letters.splice(index, 1);  //-->DONT<-- remove stuff like this, you'll ruin future letters.
+                        console.log("Pushing " + resp + "to previous.");
+                        console.log("previous = " + previous);
+
+                    } else {
+                        //guess is not in the word
+                        guesses++;
+                    }
+                } else {
+                    alert("You already guessed that. Previous guesses: " + previous)
+                }
+
+
+            }
+            if (wordLength == 0) {
+                context.fillText(word, 60, 120);
+                document.write("YOU WIN")
+            } else {
+                document.write("YOU LOSE. (You guessed " + guesses + " times.)")
+            }
+
+        }
+
+        function input() {
+            var userInput = document.getElementById("userInput").value;
+            console.log(userInput);
+            main(userInput);
+        }
+    </script>
+</body>
+
+</html>

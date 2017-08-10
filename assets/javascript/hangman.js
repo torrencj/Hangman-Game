@@ -1,4 +1,5 @@
 
+
 //Set up canvas
 var canvas = document.getElementById('gameCanvas');
 var context = canvas.getContext('2d');
@@ -32,19 +33,49 @@ var wordLength = word.length;
 document.onkeydown = function (event) {
   if (allowedInput.indexOf(event.key) != -1 && gamestate < 5) {
     updateBoard(event.key);
-    context.fillText(event.key, cursor, 550);
-    cursor += 20;
+    // context.fillText(event.key, cursor, 550);
+    // cursor += 20;
   }
 };
+
+//isallowed?
+
+//ismatch?
+  //isnew?
+  //reveal
+// else gamestate++
+
+isNew = function(guess) {
+  if (guessed.indexOf(guess) == -1) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+isMatch = function(guess) {
+  if (word.indexOf(guess) != -1) {
+  return true;
+} else {
+  return false;
+}
+}
 
 //Test the guess and draw updates
 function updateBoard(userGuess) {
   userIndex = word.indexOf(userGuess);
 
-  //If the game is still valid and userguess matches and hasn't been guessed before.
-  if (wordLength > 0 && userIndex != -1 && guessed.indexOf(userGuess) == -1) {
+  if (isNew(userGuess)) {
+    //Draw the guess to the board.
+    context.fillText(event.key, cursor, 550);
+    cursor += 20;
+  }
+
+  //If the userguess matches and hasn't been guessed before.
+  if (wordLength > 0 && isNew(userGuess) && isMatch(userGuess)) {
     guessed.push(userGuess);
     wordLength--;
+
     //Draw the first index
     context.fillText(word[userIndex], (100 + (userIndex * 20)), 490);
 
@@ -56,11 +87,11 @@ function updateBoard(userGuess) {
         wordLength--;
       }
     }
-  } else if (wordLength > 0 && userIndex == -1 && guessed.indexOf(userGuess) == -1) {
-    console.log("I think you picked a bad letter... wordLength > 0 && userIndex == -1 :" + (wordLength > 0 && userIndex == -1));
+  } else if (wordLength > 0 && isNew(userGuess)) {
     gamestate++;
     drawgallows(gamestate);
   }
+  
   //Add the guess to the previous guessed array.
   if (wordLength > 0 && guessed.indexOf(userGuess) == -1) {
     guessed.push(userGuess);
@@ -106,7 +137,7 @@ function drawgallows(gamestate) {
 }
 //Pick a random word from the dictionary.
 function pickword(dictionary) {
-  return dictionary[Math.floor(Math.random() * (dictionary.length))];
+  return dictionary[Math.floor(Math.random() * (dictionary.length - 1))];
 }
 
 //Draw a line, from and to are a pair of coords [x,y]
